@@ -376,6 +376,12 @@ body.vinfo .cartfab{display:none}
 <p>Pengumuman terbuka untuk semua warga: jadwal pupuk, giliran LPG, harga, dan ringkasan keuangan. Isinya diperbarui pengurus.</p>
 <p class="m" id="upd"></p>
 <p><button class="btn" id="pr" type="button">Cetak papan transparansi</button></p>
+<h3 class="s">Cek jadwal saya</h3>
+<div class="box" id="cj"><label for="cjt">Saya ingin cek</label><select id="cjt"><option value="pupuk">Jadwal tebus pupuk subsidi</option><option value="lpg">Giliran LPG 3 kg</option></select>
+<label for="cjp" id="cjl">Kelompok tani saya</label><select id="cjp"></select>
+<div id="cjr" role="status" aria-live="polite" style="margin-top:12px"></div></div>
+<h3 class="s">Kuota dan penyaluran desa</h3><div id="t-kuota"></div>
+<p class="m" style="margin-top:10px">Angka diisi pengurus dari catatan penyaluran dan bisa berbeda dari sistem resmi. Acuan resmi: e-RDKK/iPubers untuk pupuk, Pertamina dan pangkalan untuk LPG. Menemukan selisih? <a href="#aspirasi">Laporkan ke pengawas</a>.</p>
 <h3 class="s">Stok hari ini</h3><div id="t-stok"></div>
 <h3 class="s">Jadwal penebusan pupuk subsidi</h3><div id="t-pupuk"></div>
 <h3 class="s">Giliran kupon LPG per RT/RW</h3><div id="t-lpg"></div>
@@ -407,7 +413,9 @@ body.vinfo .cartfab{display:none}
 <label for="an2">Dusun / RT / RW</label><input type="text" id="an2">
 <label for="an3">Pekerjaan utama</label><select id="an3"><option>Petani</option><option>Buruh tani</option><option>Pedagang/UMKM</option><option>Pemuda</option><option>Lainnya</option></select>
 <label for="an4">Nomor HP</label><input type="tel" id="an4" autocomplete="tel">
-<p style="margin-top:12px"><button class="btn" id="aw" type="button">Daftar lewat WhatsApp</button></p>
+<div id="arw" hidden><label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-weight:500"><input type="checkbox" id="ac" style="margin-top:6px;flex:none"><span>Saya setuju data ini dipakai pengurus koperasi untuk menghubungi saya tentang keanggotaan.</span></label><div style="position:absolute;left:-9999px" aria-hidden="true"><label>Jangan diisi<input type="text" id="hp2" tabindex="-1" autocomplete="off"></label></div></div>
+<p style="margin-top:12px"><button class="btn" id="ar" type="button" hidden>Kirim pendaftaran</button> <button class="btn" id="aw" type="button">Daftar lewat WhatsApp</button></p>
+<p class="m" id="amsg" role="status"></p>
 <p class="m">Besaran simpanan pokok dan wajib: segera hadir.</p></div>
 <div><h3>Manfaat yang direncanakan</h3><ul class="c"><li>Hak suara di Rapat Anggota Tahunan.</li><li>Pembagian SHU sesuai aturan koperasi.</li><li>Belanja kebutuhan dengan harga sesuai HET.</li><li>Layanan simpan pinjam, setelah tersedia.</li></ul></div></div>
 </div></section>
@@ -427,7 +435,7 @@ body.vinfo .cartfab{display:none}
 <select id="ak"><option>Usaha dan layanan</option><option>Pupuk subsidi</option><option>LPG subsidi</option><option>Sewa armada</option><option>Pengaduan (ke pengawas)</option><option>Lainnya</option></select>
 <label for="ad">Isi usul</label><textarea id="ad" rows="4"></textarea>
 <p class="m" style="margin-top:8px">Jangan menulis NIK atau data pribadi lain.</p>
-<p style="margin-top:12px"><button class="btn" id="sv" type="button">Kirim ke pengurus</button> <button class="btn" id="wa" type="button" hidden>Kirim lewat WhatsApp</button></p>
+<div style="position:absolute;left:-9999px" aria-hidden="true"><label>Jangan diisi<input type="text" id="hp1" tabindex="-1" autocomplete="off"></label></div><p style="margin-top:12px"><button class="btn" id="sv" type="button">Kirim ke pengurus</button> <button class="btn" id="wa" type="button" hidden>Kirim lewat WhatsApp</button></p>
 <p class="m" id="msg" role="status"></p>
 </form>
 <div id="list"><p class="m">Belum ada usul tersimpan.</p></div>
@@ -561,6 +569,9 @@ body.vinfo .cartfab{display:none}
    Isi SHEET_ID dengan ID Google Sheet pengurus (bagian antara /d/ dan /edit pada alamat Sheet).
    Dikosongkan = situs memakai data bawaan di bawah. Panduan lengkap ada di file Template Data Pengurus. */
 var SHEET_ID='';
+/* FORM_URL = alamat aplikasi web Apps Script (berakhiran /exec) untuk menerima aspirasi dan pendaftaran anggota.
+   Dikosongkan = tombol kirim memakai WhatsApp seperti sebelumnya. */
+var FORM_URL='';
 (function(){
 var TIMEOUT=4500,CK='kdkmp_sheet_v1';
 var TABS={
@@ -573,7 +584,8 @@ var TABS={
  agenda:{h:['Tanggal','Kegiatan','Tempat']},
  umkm:{h:['Usaha','Menu','Jam buka']},
  aspirasi:{h:['Nama','Kategori','Usul','Status','Tanggapan']},
- booked:{h:['Tanggal']}
+ booked:{h:['Tanggal']},
+ kuota:{h:['Komoditas','Periode','Kuota','Tertebus','Satuan','Jatah per penerima']}
 };
 function csv(s){var r=[],row=[],f='',q=false,i=0,c;
  for(;i<s.length;i++){c=s[i];
@@ -594,6 +606,12 @@ function getTab(n){
   .then(function(r){if(!r.ok)throw 0;return r.text()})
   .then(function(t){return clean(csv(t),TABS[n].h)})
   .catch(function(){return null})}
+function num(x){var s=String(x==null?'':x).replace(/[^\d.,-]/g,'');if(!s)return 0;
+ if(/^-?\d{1,3}([.,]\d{3})+$/.test(s))s=s.replace(/[.,]/g,'');           /* 2.000 atau 2,000 = ribuan */
+ else if(/^-?\d{1,3}(\.\d{3})+,\d+$/.test(s))s=s.replace(/\./g,'').replace(',','.'); /* 1.234,5 */
+ else if(/^-?\d{1,3}(,\d{3})+\.\d+$/.test(s))s=s.replace(/,/g,'');       /* 1,234.5 */
+ else if(s.indexOf(',')>-1&&s.indexOf('.')<0)s=s.replace(',','.');         /* 2,5 = desimal */
+ return +s||0}
 function safeUrl(u){return /^https:\/\/[^\s"'<>]+$/i.test(u)?u:''}
 function build(raw){var d={},n;
  if(raw.pengaturan){var p={};raw.pengaturan.forEach(function(r){p[r[0].toLowerCase()]=r[1]});
@@ -603,17 +621,28 @@ function build(raw){var d={},n;
   if(p.peta)d.peta=safeUrl(p.peta);
   var s={};['ig','yt','x','threads','tiktok'].forEach(function(k){s[k]=safeUrl(p[k]||'')});d.sosmed=s}
  ['stok','pupuk','lpg','harga','agenda','umkm'].forEach(function(k){if(raw[k])d[k]=raw[k]});
- if(raw.keuangan)d.keuangan=raw.keuangan.map(function(r){var num=function(x){return +String(x).replace(/[^\d.-]/g,'')||0};return [r[0],num(r[1]),num(r[2]),r[3]]});
+ if(raw.keuangan)d.keuangan=raw.keuangan.map(function(r){return [r[0],num(r[1]),num(r[2]),r[3]]});
  if(raw.aspirasi)d.aspirasi=raw.aspirasi.map(function(r){var o={n:r[0]||'Warga',k:r[1],d:r[2]};if(r[3])o.s=r[3];if(r[4])o.t=r[4];return o}).filter(function(o){return o.d});
  if(raw.booked)d.booked=raw.booked.map(function(r){return r[0]});
+ if(raw.kuota)d.kuota=raw.kuota.map(function(r){return [r[0],r[1],num(r[2]),num(r[3]),r[4],r[5]]});
  return d}
+var FORM_RE=/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/;
+function getAsp(){
+ if(!FORM_RE.test(FORM_URL))return Promise.resolve(null);
+ return fetch(FORM_URL+'?action=aspirasi',{cache:'no-store'}).then(function(r){return r.json()}).then(function(j){
+  if(!j||!Array.isArray(j.aspirasi))return null;
+  return j.aspirasi.map(function(o){var x={n:String(o.n||'Warga'),k:String(o.k||''),d:String(o.d||'')};if(o.s)x.s=String(o.s);if(o.t)x.t=String(o.t);return x}).filter(function(x){return x.d})}).catch(function(){return null})}
 function load(){
- if(!SHEET_ID)return Promise.resolve(null);
+ var useSheet=!!SHEET_ID,useForm=FORM_RE.test(FORM_URL);
+ if(!useSheet&&!useForm)return Promise.resolve(null);
  var names=Object.keys(TABS);
- var net=Promise.all(names.map(getTab)).then(function(res){var raw={},ok=0;
+ var jobs=(useSheet?names.map(getTab):names.map(function(){return Promise.resolve(null)})).concat([getAsp()]);
+ var net=Promise.all(jobs).then(function(res){var raw={},ok=0;
   names.forEach(function(n,i){if(res[i]){raw[n]=res[i];ok++}});
+  var asp=res[names.length];if(asp)ok++;
   if(!ok)throw 0;
-  var d=build(raw);try{localStorage.setItem(CK,JSON.stringify(d))}catch(e){}return d});
+  var d=build(raw);if(asp)d.aspirasi=asp;
+  try{localStorage.setItem(CK,JSON.stringify(d))}catch(e){}return d});
  var to=new Promise(function(_,no){setTimeout(no,TIMEOUT)});
  return Promise.race([net,to]).catch(function(){
   try{return JSON.parse(localStorage.getItem(CK)||'null')}catch(e){return null}})}
@@ -629,6 +658,7 @@ load().then(function(d){window.__KD=d},function(){}).then(function(){whenReady(b
 var CFG={manajer:"Bima Febrian",wa:"6289684805256",alamat:"Area Sawah, Klepek, Kec. Kunjang, Kabupaten Kediri, Jawa Timur",peta:"https://maps.app.goo.gl/yT9gCEmszVHLBnsG7",jam:"08.00\u201317.00",update:"",
 pupuk:[],lpg:[],harga:[["LPG 3 kg","tabung","Rp16.000"],["MinyaKita","liter","Rp15.700"],["Beras SPHP","5 kg","Rp58.000"],["Gula pasir","kg","Rp17.500"]],keuangan:[],stok:[],promo:[],aspirasi:[{"n": "Warga", "k": "Usaha dan layanan", "d": "Min, koperasi tolong buka jasa joki nangis kalau tanggal tua. Sama sekalian jual es batu yang nggak gampang mencair biar awet sampe bulan depan."}, {"n": "Mas-mas Gabut", "k": "Usaha dan layanan", "d": "Usul koperasi buka layanan pinjam pacar buat kondangan mantan, bayarnya bisa dicicil pake hasil panen jagung."}, {"n": "Warga", "k": "Usaha dan layanan", "d": "Tolong sedia layanan penitipan suami yang hobi mancing tapi nggak pernah dapet ikan, biar nggak menuh-menuhin teras rumah."}, {"n": "Petani Skena", "k": "Pupuk subsidi", "d": "Min, ada nggak pupuk subsidi yang kalau ditabur ke tanaman langsung tumbuh jadi pohon duit? Capek panen padi harganya naik turun kayak mood cewek."}, {"n": "Warga", "k": "Pupuk subsidi", "d": "Usul pupuk NPK-nya dikasih varian rasa matcha atau stroberi min, biar tanaman di sawah nggak bosen makannya itu-itu terus."}, {"n": "Kang Tani", "k": "Pupuk subsidi", "d": "Tolong adakan pupuk khusus buat numbukin harapan yang udah layu karena ditinggal pas lagi sayang-sayangnya."}, {"n": "Emak-emak Komplek", "k": "LPG subsidi", "d": "Min, tabung melon 3 kg tolong dibikin versi transparan dong, biar ketahuan isinya beneran gas atau cuma harapan palsu."}, {"n": "Warga", "k": "LPG subsidi", "d": "Usul tabung LPG-nya dikasih alarm suara sirine kalau gasnya mau abis, soalnya sering banget abis pas lagi goreng tempe setengah mateng."}, {"n": "Anak Kos", "k": "LPG subsidi", "d": "Bisa nggak beli gas melon tapi isinya angin surga aja min? Biar adem pas lagi masak di dapur."}, {"n": "Warga", "k": "Sewa armada", "d": "Min, armada koperasi bisa disewa buat pindahan perasaan dari masa lalu ke masa depan nggak? Kalau bisa, tolong siapin truk engkel yang bak-nya paling gede."}, {"n": "Pemuda Desa", "k": "Sewa armada", "d": "Mau sewa pickup koperasi buat keliling desa sambil teriak-teriak 'AKU SUDAH MOVE ON', kena tarif per jam atau per kilometer min?"}, {"n": "Warga", "k": "Sewa armada", "d": "Armada koperasinya ada yang bisa terbang nggak min? Buat menghindari macet pas mau beli gorengan sore."}, {"n": "Warga", "k": "Pengaduan (ke pengawas)", "d": "Lapor Pak Pengawas, tadi saya beli es krim di koperasi tapi dingin banget sikapnya, persis kayak chat gebetan yang cuma dibales 'Y'."}, {"n": "Warga", "k": "Pengaduan (ke pengawas)", "d": "Mohon ditindak lanjuti, kasir koperasi terlalu ramah sampai bikin saya baper dan pengen belanja terus tiap jam padahal dompet udah tipis."}, {"n": "Anonim", "k": "Pengaduan (ke pengawas)", "d": "Pak Pengawas, tolong awasi timbangan di koperasi, soalnya berat rindu saya ke dia kayaknya nggak sanggup ditimbang di sana."}, {"n": "Warga", "k": "Lainnya", "d": "Min, WiFi koperasi tolong kencengin sampai radius 5 kilometer, biar saya mabar Mobile Legends di tengah sawah sinyalnya tetep hijau."}, {"n": "Bocil Kematian", "k": "Lainnya", "d": "Usul di teras koperasi dipasangin AC sentral sama kasur empuk, biar enak buat rebahan abis pulang sekolah."}, {"n": "Warga", "k": "Lainnya", "d": "Kapan koperasi ngadain lomba melamun tingkat desa? Saya siap jadi perwakilan RT 01 dengan pengalaman melamun 8 jam sehari."}, {"n": "Warga", "k": "Usaha dan layanan", "d": "Min, koperasi tolong buka jasa joki tidur siang buat warga yang sibuk mikirin cicilan. Bayarnya pake sistem bagi hasil mimpi indah."}, {"n": "Petani Milenial", "k": "Pupuk subsidi", "d": "Usul pupuk subsidi dibikin versi semprot parfum min, biar tanaman jagung di sawah aromanya wangi Baccarat dan nggak minder sama tanaman hias."}, {"n": "Ibu-ibu Komplek", "k": "LPG subsidi", "d": "Min, tabung gas 3 kg tolong dikasih fitur auto-refill pas lagi dipakai masak rendang, soalnya kalau habis di tengah jalan rasanya lebih sakit daripada ditinggal pas lagi sayang."}, {"n": "Pemuda Santuy", "k": "Sewa armada", "d": "Mau sewa armada koperasi buat antar-jemput niat kerja yang sering hilang setiap Senin pagi, kira-kira muat berapa ton min?"}, {"n": "Warga", "k": "Pengaduan (ke pengawas)", "d": "Lapor Pak Pengawas, saya beli kopi sachet di koperasi tapi pas diseduh rasanya tetep pahit kayak kenyataan hidup, mohon dievaluasi gulanya."}, {"n": "Anonim", "k": "Lainnya", "d": "Min, pintu masuk koperasi tolong dipasangin mesin pendeteksi kebohongan, biar ketahuan siapa aja warga yang bilang 'bentar lagi otw' padahal baru bangun tidur."}],agenda:[],umkm:[],booked:[],waPengawas:"",sosmed:{ig:"",yt:"",x:"",threads:"",tiktok:""}};
 if(window.applyKD)applyKD(CFG);
+CFG.kuota=CFG.kuota||[];
 var CART=[];try{CART=JSON.parse(localStorage.getItem('cart')||'[]')}catch(e){}
 var SBX=false;try{SBX=(window.self!==window.top)||window.origin==='null'}catch(e){SBX=true}
 var _wo=window.open;window.open=function(u,t,f){if(typeof u==='string'&&/^https:\/\/wa\.me\//.test(u)&&SBX){if(window.waModal)waModal(u);return null}return _wo.call(window,u,t,f)};
@@ -763,6 +793,38 @@ $('uw').onclick=function(){wsend('Pendaftaran UMKM Teras KDKMP Klepek\n\nNama us
 tbl('t-stok',['Barang','Status','Diperbarui'],CFG.stok,'Segera hadir.');
 tbl('t-agenda',['Tanggal','Kegiatan','Tempat'],CFG.agenda,'Agenda segera hadir.');
 tbl('t-umkm',['Usaha','Menu','Jam buka'],CFG.umkm,'Daftar UMKM segera hadir.');
+(function(){
+var MB={jan:0,feb:1,mar:2,apr:3,mei:4,jun:5,jul:6,agu:7,sep:8,okt:9,nov:10,des:11};
+function rng(s){s=s||'';var m=/(\d{1,2})\s*[\u2013-]\s*(\d{1,2})\s+(jan|feb|mar|apr|mei|jun|jul|agu|sep|okt|nov|des)[a-z]*\.?\s+(\d{4})/i.exec(s);
+if(m)return [new Date(+m[4],MB[m[3].toLowerCase()],+m[1]),new Date(+m[4],MB[m[3].toLowerCase()],+m[2])];
+m=/(\d{1,2})\s+(jan|feb|mar|apr|mei|jun|jul|agu|sep|okt|nov|des)[a-z]*\.?\s+(\d{4})/i.exec(s);
+if(m){var d=new Date(+m[3],MB[m[2].toLowerCase()],+m[1]);return [d,d]}return null}
+function hariIni(){var w=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));return new Date(w.getFullYear(),w.getMonth(),w.getDate())}
+function hitung(s){var r=rng(s);if(!r)return '';var t=hariIni(),a=Math.round((r[0]-t)/864e5),b=Math.round((r[1]-t)/864e5);
+if(a>1)return a+' hari lagi';if(a===1)return 'Besok';if(b>=0&&a<=0)return 'Berlangsung hari ini';return 'Sudah lewat'}
+var cjt=$('cjt'),cjp=$('cjp'),cjr=$('cjr');
+function rows(){return cjt.value==='lpg'?CFG.lpg:CFG.pupuk}
+function p(txt,cls){var e=document.createElement('p');e.style.margin='4px 0';if(cls)e.className=cls;e.textContent=txt;return e}
+function tampil(){cjr.textContent='';var r=rows(),i=cjp.value;if(i===''||!r[i])return;var x=r[i],h=hitung(x[1]);
+var j=document.createElement('p');j.style.margin='4px 0';var b=document.createElement('b');b.textContent='Jadwal: '+x[1];j.appendChild(b);
+if(h){var s=document.createElement('span');s.className='tag';s.style.marginLeft='8px';s.textContent=h;j.appendChild(s)}cjr.appendChild(j);
+if(cjt.value==='pupuk'){if(x[2])cjr.appendChild(p(x[2]));cjr.appendChild(p('Bawa KTP. Petani yang terdaftar di e-RDKK cukup membawa KTP.','m'))}
+else cjr.appendChild(p('Bawa KTP saat menukar kupon.','m'));
+var a=document.createElement('a');a.href='#adil';a.textContent='Lihat syarat dan alur lengkap';a.style.display='inline-block';a.style.marginTop='4px';cjr.appendChild(a)}
+function isi(){var r=rows();cjp.textContent='';cjr.textContent='';$('cjl').textContent=cjt.value==='lpg'?'RT/RW saya':'Kelompok tani saya';
+if(!r.length){cjp.disabled=true;cjr.appendChild(p('Jadwal belum diumumkan pengurus. Pantau papan ini atau tanyakan ke pengurus lewat WhatsApp.','m'));return}
+cjp.disabled=false;var o0=document.createElement('option');o0.value='';o0.textContent='Pilih...';cjp.appendChild(o0);
+r.forEach(function(x,i){var o=document.createElement('option');o.value=i;o.textContent=x[0];cjp.appendChild(o)})}
+cjt.onchange=isi;cjp.onchange=tampil;isi();
+var kc=$('t-kuota');kc.textContent='';
+if(!CFG.kuota.length){var d=document.createElement('div');d.className='todo';d.textContent='Segera hadir.';kc.appendChild(d)}
+CFG.kuota.forEach(function(r){var k=+r[2]||0,u=+r[3]||0,pc=k>0?Math.min(100,Math.round(u/k*100)):0,sisa=Math.max(0,k-u),f=function(n){return n.toLocaleString('id-ID')};
+var c=document.createElement('div');c.className='box';c.style.marginBottom='12px';
+var h=document.createElement('h3');h.style.margin='0 0 4px';h.textContent=r[0]+(r[1]?' \u00b7 '+r[1]:'');c.appendChild(h);
+var bar=document.createElement('div');bar.className='bar';var sp=document.createElement('span');sp.style.width=pc+'%';bar.appendChild(sp);c.appendChild(bar);
+c.appendChild(p('Tertebus '+f(u)+' dari '+f(k)+(r[4]?' '+r[4]:'')+' ('+pc+'%). Sisa '+f(sisa)+(r[4]?' '+r[4]:'')+'.'));
+if(r[5])c.appendChild(p('Jatah per penerima: '+r[5],'m'));kc.appendChild(c)})
+})();
 if(CFG.keuangan.length){var mx=Math.max.apply(null,CFG.keuangan.map(function(r){return Math.max(+r[1]||0,+r[2]||0)}))||1,kc=$('t-keu');
 CFG.keuangan.forEach(function(r){var d=document.createElement('div');d.style.marginTop='10px';d.textContent=r[0]+' (hijau: pemasukan, merah: pengeluaran)';['1','2'].forEach(function(x,i){var b=document.createElement('div');b.className='bar'+(i?' o':'');var s=document.createElement('span');s.style.width=((+r[x]||0)/mx*100)+'%';b.appendChild(s);d.appendChild(b)});kc.appendChild(d)})}
 $('pr').onclick=function(){document.body.classList.add('pr');try{window.print()}catch(e){}setTimeout(function(){document.body.classList.remove('pr')},800)};
@@ -786,10 +848,27 @@ $('pbo').innerHTML='<table><tr><td>Total belanja</td><td><b>'+rp(t)+'</b></td></
 if(!CFG.aspirasi.length){var p=document.createElement('p');p.className='m';p.textContent='Belum ada usul yang ditampilkan. Usul yang disetujui pengurus akan muncul di sini.';l.appendChild(p)}
 CFG.aspirasi.slice().reverse().forEach(function(a){var d=document.createElement('div');d.className='asp';var b=document.createElement('b');b.textContent=(a.n||'Warga')+' \u00b7 '+a.k+(a.s?' \u00b7 '+a.s:'');var p=document.createElement('p');p.style.margin='4px 0 0';p.textContent=a.d;d.appendChild(b);d.appendChild(p);
 if(a.t){var r=document.createElement('p');r.className='m';r.style.margin='4px 0 0';r.textContent='Tanggapan pengurus: '+a.t;d.appendChild(r)}l.appendChild(d)})})();
+var FORM_ON=FORM_RE_T(typeof FORM_URL==='string'?FORM_URL:'');
+function FORM_RE_T(u){return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(u)}
+var _ids={};function newId(k){return _ids[k]||(_ids[k]=Date.now().toString(36)+Math.random().toString(36).slice(2,9))}
+var ERR={gagal:'Belum bisa dipastikan terkirim. Coba lagi, atau kirim lewat WhatsApp.',usul_kosong:'Isi usul terlalu pendek.',terlalu_banyak:'Sedang banyak kiriman. Coba lagi beberapa menit lagi.',hp:'Nomor HP belum benar.',nama:'Nama belum diisi.',setuju:'Centang persetujuan dulu.'};
+function postForm(p){return fetch(FORM_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}).then(function(r){return r.json()}).then(function(j){return j&&j.ok?'ok':(j&&j.error)||'gagal'}).catch(function(){return 'gagal'})}
 $('sv').onclick=function(){var d=$('ad').value.trim(),m=$('msg');if(!d){m.textContent='Isi usul belum ditulis.';return}
+if(FORM_ON){var b=$('sv');b.disabled=true;m.textContent='Mengirim...';
+postForm({type:'aspirasi',id:newId('a'),nama:$('an').value,kategori:$('ak').value,usul:d,web:$('hp1').value}).then(function(r){b.disabled=false;
+if(r==='ok'){$('ad').value='';_ids.a=null;m.textContent='Terkirim ke pengurus. Terima kasih. Usul yang disetujui akan tampil di papan.'}else m.textContent=ERR[r]||ERR.gagal});return}
 var k=$('ak').value,nm=$('an').value.trim(),t='Usul untuk KDKMP Klepek ('+k+'): '+d+(nm?' \u2014 '+nm:''),n=(k.indexOf('Pengaduan')===0&&CFG.waPengawas)?CFG.waPengawas:CFG.wa;
 if(!n){m.textContent='Nomor WhatsApp belum tersedia.';return}
 window.open('https://wa.me/'+n+'?text='+encodeURIComponent(t),'_blank');$('ad').value='';m.textContent=SBX?'Salin usul lalu kirim ke WhatsApp pengurus.':'Usul dikirim ke pengurus lewat WhatsApp. Usul yang disetujui akan tampil di papan.'};
+if(FORM_ON){$('arw').hidden=false;$('ar').hidden=false;$('aw').textContent='Atau daftar lewat WhatsApp';
+$('ar').onclick=function(){var m=$('amsg'),nm=$('an1').value.trim(),hp=$('an4').value.replace(/\D/g,'');
+if(nm.length<2){m.textContent=ERR.nama;return}
+if(hp.length<9){m.textContent=ERR.hp;return}
+if(!$('ac').checked){m.textContent=ERR.setuju;return}
+var b=$('ar');b.disabled=true;m.textContent='Mengirim...';
+postForm({type:'anggota',id:newId('m'),nama:nm,dusun:$('an2').value,pekerjaan:$('an3').value,hp:$('an4').value,setuju:true,web:$('hp2').value}).then(function(r){b.disabled=false;
+if(r==='ok'){['an1','an2','an4'].forEach(function(i){$(i).value=''});$('ac').checked=false;_ids.m=null;m.textContent='Pendaftaran terkirim. Petugas koperasi akan menghubungi lewat nomor yang diisi.'}else m.textContent=ERR[r]||ERR.gagal})}}
+
 
 document.documentElement.classList.add('js');
 (function(){var pr=document.createElement('div');pr.className='prog';document.body.appendChild(pr);
@@ -839,7 +918,7 @@ b.onclick=function(e){e.preventDefault();fz=(fz+1)%3;try{localStorage.setItem('f
 var BC=['Usaha dan layanan','Pupuk subsidi','LPG subsidi','Sewa armada','Pengaduan (ke pengawas)','Lainnya'],bf='Semua';
 (function(){var l=$('list');l.textContent='';
 var hh=document.createElement('h3');hh.textContent='Papan usul warga';l.appendChild(hh);
-var nt=document.createElement('p');nt.className='m';nt.textContent='Contoh isi papan. Usul asli akan menggantikannya setelah disetujui pengurus.';l.appendChild(nt);
+if(!(window.__KD&&window.__KD.aspirasi)){var nt=document.createElement('p');nt.className='m';nt.textContent='Contoh isi papan. Usul asli akan menggantikannya setelah disetujui pengurus.';l.appendChild(nt)}
 var ch=document.createElement('div');ch.className='tabs';l.appendChild(ch);
 var it=document.createElement('div');it.id='bitems';l.appendChild(it);
 function draw(){it.textContent='';ch.textContent='';
