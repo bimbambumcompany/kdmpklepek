@@ -1,0 +1,30 @@
+{
+ "name": "KDKMP Klepek - Koperasi Desa Merah Putih",
+ "short_name": "KDKMP Klepek",
+ "description": "Papan transparansi, jadwal pupuk dan LPG, katalog, dan layanan Koperasi Desa Merah Putih Klepek, Kunjang, Kediri.",
+ "lang": "id",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#ffffff",
+ "theme_color": "#e4002b",
+ "icons": [
+  {
+   "src": "assets/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "assets/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "assets/icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}
