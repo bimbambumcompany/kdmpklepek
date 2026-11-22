@@ -248,6 +248,130 @@ body.vinfo .cartfab{display:none}
 .bskrow{display:flex;gap:14px;align-items:center;margin-bottom:12px}.bskrow p{margin:0}
 
 .pt.pimg{height:150px;padding:0;overflow:hidden;background:#fff}.pt.pimg img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ===== Perbaikan tata letak: jarak, tombol suara, target sentuh ===== */
+html{scroll-padding-top:76px}
+/* judul bagian + tombol suara selalu satu baris (judul panjang membungkus di dalam stikernya) */
+section .w>h2:has(+.say){max-width:calc(100% - 56px)}
+/* jarak minimum antara blok (kotak, tabel, grid, langkah) dan elemen sesudahnya; 6px bayangan ikut dihitung */
+.w>.box+*:not(.box):not(.grid):not(details):not(h3):not(h4),
+.w>.wrap+*:not(.wrap):not(h3),
+.w>.grid+*:not(h3),
+.w>.steps+*:not(h3),
+.w>.todo+*:not(h3),
+.w>.fleet+*:not(h3),
+.w>.stage+*:not(h3),
+.w>.quick+*:not(h3){margin-top:24px!important}
+.w>.box+h3,.w>.box+h4,.w>.wrap+h3,.w>.grid+h3,.w>.steps+h3,.w>.todo+h3,.w>.fleet+h3,.w>.stage+h3{margin-top:32px!important}
+/* kotak hasil hitung: jarak atas dan bawah seimbang */
+#pbo,#pho,#fo,#sho,#cjr{margin-top:16px!important;margin-bottom:20px}
+#cjr:empty{margin:0!important}
+/* chip kategori dan daftar usul */
+.tabs{margin-bottom:22px}
+#bitems{padding-top:4px}
+/* judul kartu mitra dua baris tidak berdempet */
+.mgrid h3{line-height:1.2;margin-bottom:4px}
+/* area sentuh minimal ~36-44px tanpa mengubah tampilan */
+.vt,.tabs button{min-height:38px}
+details.box summary{padding:10px 0;margin:-10px 0}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--red);vertical-align:middle;margin:0 6px 0 0;flex:none}
+/* tombol kipas/keranjang melayang tidak menutupi baris terakhir */
+footer{padding-bottom:104px}
+@media(max-width:520px){
+section{padding:48px 0}
+th,td{padding:9px 8px;font-size:.9rem}
+.w>.box+*:not(.box):not(.grid):not(details):not(h3):not(h4),.w>.wrap+*:not(.wrap):not(h3),.w>.grid+*:not(h3){margin-top:22px!important}
+}
+
+/* ===== Tampilan lebih lebar ===== */
+.w{max-width:1320px;padding:0 clamp(20px,3.2vw,48px)}
+.hero{padding-left:clamp(20px,3.2vw,48px);padding-right:clamp(20px,3.2vw,48px)}
+p{max-width:78ch}
+.vid{max-width:1040px}
+.cast{width:min(520px,42%)}
+@media(min-width:1100px){.scene .pic{aspect-ratio:2576/1040}}
+/* ===== Slider "Sehari di Teras" ===== */
+.ctl{padding:18px 22px 20px}
+.ctl .ctl-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;font-size:1rem;color:var(--ink)}
+.ctl .ctl-top label{font-weight:800}
+.jst{display:inline-flex;align-items:center;gap:8px;font:800 .82rem "DM Sans",sans-serif;padding:5px 12px;border:2px solid var(--line);border-radius:99px;background:var(--card);color:var(--ink);transition:border-color .3s}
+.jst i{width:10px;height:10px;border-radius:50%;background:var(--c,#999);box-shadow:0 0 0 3px color-mix(in srgb,var(--c,#999) 28%,transparent);flex:none}
+.jst.open{--c:#2f9e4f}.jst.prep{--c:#f0a500}.jst.closed{--c:#e4002b}.jst.night{--c:#7a63e0}
+.ctl .trackw{display:block;position:relative;padding-top:34px;font-size:1rem}
+.jbub{position:absolute;top:0;left:calc(14px + (100% - 28px)*var(--p,0));transform:translateX(-50%);background:var(--red);color:#fff;font:800 .85rem "DM Sans",sans-serif;padding:3px 10px;border:2px solid var(--line);border-radius:99px;pointer-events:none;white-space:nowrap}
+.jbub::after{content:"";position:absolute;left:50%;bottom:-7px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--line);border-bottom:0}
+.ctl input[type=range]{-webkit-appearance:none;appearance:none;display:block;width:100%;height:30px;background:transparent;margin:0;cursor:grab;touch-action:pan-y}
+.ctl input[type=range]:active{cursor:grabbing}
+.ctl input[type=range]:focus-visible{outline:3px solid var(--red);outline-offset:4px;border-radius:99px}
+.ctl input[type=range]::-webkit-slider-runnable-track{box-sizing:border-box;height:16px;border:3px solid var(--line);border-radius:99px;background:linear-gradient(90deg,#ffb27a 0 5.88%,#ffe14d 5.88% 58.82%,#ff9d6b 58.82% 70.59%,#5b46b8 70.59% 100%)}
+.ctl input[type=range]::-moz-range-track{box-sizing:border-box;height:16px;border:3px solid var(--line);border-radius:99px;background:linear-gradient(90deg,#ffb27a 0 5.88%,#ffe14d 5.88% 58.82%,#ff9d6b 58.82% 70.59%,#5b46b8 70.59% 100%)}
+.ctl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;margin-top:-9px;border-radius:50%;background:var(--red);border:3px solid var(--line);box-shadow:2px 2px 0 var(--sh);transition:transform .12s}
+.ctl input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--red);border:3px solid var(--line);box-shadow:2px 2px 0 var(--sh)}
+.ctl input[type=range]:active::-webkit-slider-thumb{transform:scale(1.12)}
+.ctl .ticks{display:block;position:relative;height:20px;margin-top:0;font-size:.72rem}
+.ticks span{position:absolute;top:0;left:calc(14px + (100% - 28px)*var(--p,0));transform:translateX(-50%);font:700 .72rem "DM Sans",sans-serif;color:var(--mute)}
+.ticks span::before{content:"";display:block;width:2px;height:5px;margin:0 auto 1px;background:var(--mute);opacity:.6}
+.ticks span.f{transform:translateX(-14px)}.ticks span.l{transform:translateX(calc(-100% + 14px))}
+.ctl .jleg{display:flex;justify-content:space-between;gap:8px;font-size:.82rem;color:var(--mute);margin-top:2px}
+.ctl .jbtns{display:flex;justify-content:flex-start;gap:8px;flex-wrap:wrap;margin-top:14px;font-size:1rem;color:var(--ink)}
+.btn.mini{padding:7px 14px;font-size:.85rem;min-height:38px}
+.btn.alt{background:var(--card);color:var(--ink)}
+.ctl .acts{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
+.acts li{display:flex;align-items:center;gap:10px;border:2px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--bg);font-size:.9rem;animation:jin .35s both}
+.acts li span{font-size:1.25rem;line-height:1}
+@keyframes jin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.sky.swap>.tag,.sky.swap>h3,.sky.swap>p{animation:jin .4s both}
+.celest{position:absolute;width:46px;height:46px;border-radius:50%;border:3px solid #111;background:#ffcf33;box-shadow:0 0 0 8px rgba(255,255,255,.4);transform:translate(-50%,-50%);transition:left .4s linear,top .4s linear,box-shadow .4s;z-index:2}
+.celest.moon{background:#fff;box-shadow:inset -10px -5px 0 #cfc8ff,0 0 0 8px rgba(255,255,255,.18)}
+.scene .lamps,.scene .sign{display:block!important;opacity:var(--lamp,0);transition:opacity .4s}
+.scene .ov{transition:background .4s}
+@media(prefers-reduced-motion:reduce){.acts li,.sky.swap>*{animation:none!important}.celest{transition:none}}
+@media(max-width:520px){.ctl{padding:16px}.ctl .jleg{font-size:.74rem}.btn.mini{flex:1 1 calc(50% - 8px)}}
+/* ===== Cetak ===== */
+.phead{display:none}
+@media print{
+@page{size:A4;margin:14mm 13mm}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.fab,.cartfab,.up,.prog,.toast,.say,.sill,.cloud,.band,.tick,#cwa,.lbx{display:none!important}
+.js .rv,.rv{opacity:1!important;transform:none!important;translate:none!important}
+body.pr,body.pr html{background:#fff!important}
+body.pr nav,body.pr header,body.pr .herowrap,body.pr section:not(#transparan),body.pr footer,body.pr .np,body.pr .devby{display:none!important}
+body.pr #transparan{background:#fff!important;border:0!important;padding:0!important}
+body.pr #transparan .w{max-width:none;padding:0}
+body.pr #transparan,body.pr #transparan *{color:#111!important;text-shadow:none!important}
+body.pr #transparan .m,body.pr #transparan .m *{color:#444!important}
+body.pr .phead{display:flex;align-items:center;gap:14px;padding:0 0 10pt;margin:0 0 10pt;border-bottom:1.5pt solid #111}
+body.pr .phead img{height:44px;width:auto;border:1px solid #ccc;border-radius:6px;padding:3px 6px;background:#fff}
+body.pr .phead div{display:flex;flex-direction:column;gap:1pt;line-height:1.25}
+body.pr .phead b{font:800 13pt "Bricolage Grotesque",sans-serif}
+body.pr .phead span,body.pr .phead em{font-size:9pt;font-style:normal}
+body.pr #transparan h2{display:block;background:none!important;border:0;box-shadow:none;transform:none;padding:0;margin:0 0 6pt;font-size:21pt;letter-spacing:-.01em}
+body.pr #transparan h3,body.pr #transparan h3.s{font-size:12pt;margin:14pt 0 5pt;break-after:avoid;padding-bottom:2pt;border-bottom:.75pt solid #999}
+body.pr #transparan p{font-size:10.5pt;max-width:none;margin:0 0 6pt;line-height:1.4}
+body.pr #transparan .box,body.pr #transparan .wrap,body.pr #transparan .todo,body.pr #transparan table{break-inside:avoid;box-shadow:none!important;background:#fff!important}
+body.pr #transparan .box,body.pr #transparan .wrap{border:.75pt solid #777;border-radius:5px;padding:8pt 10pt}
+body.pr #transparan .wrap{padding:0;overflow:visible}
+body.pr #transparan .todo{border:.75pt dashed #888;border-radius:5px;padding:6pt 10pt;font-size:10pt}
+body.pr #transparan table{width:100%;font-size:10pt;border-collapse:collapse}
+body.pr #transparan th{background:#e9e9e9!important;font-weight:800}
+body.pr #transparan th,body.pr #transparan td{padding:4pt 8pt;border-bottom:.5pt solid #bbb}
+body.pr #transparan .bar{background:#eee!important;border:.75pt solid #777;height:9pt}
+body.pr #transparan .bar span{background:#2f9e4f!important}
+body.pr #transparan .bar.o span{background:#e4002b!important}
+body.pr #transparan a{text-decoration:none}
+}
+
+/* ===== Perbaikan 3: bar atas selebar tombol melayang, jarak hero, awan ===== */
+nav .w{max-width:none;padding-left:16px;padding-right:16px}
+nav .links::before,nav .links::after{content:"";margin:auto}
+header.hero.w{padding-top:48px;padding-bottom:56px}
+.cloud.c2{top:40px;right:22%}
+.cloud.s1{top:70px}
+@media(max-width:520px){header.hero.w{padding-top:36px}}
+
+/* ===== Perbaikan 4: ruang untuk ilustrasi pojok kanan atas bagian ===== */
+@media(min-width:521px){section .w>p,section .w>.m{max-width:min(78ch,calc(100% - 170px))}}
+header.hero>p.m:first-of-type,header.hero>p.m:first-child{margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -265,7 +389,7 @@ body.vinfo .cartfab{display:none}
 
 <div class="sts"><span>✦ Hasil tani langsung ke pasar</span><span>✦ Subsidi dibagi adil</span></div>
 <div class="stats"><div class="st"><big>80.081</big><span>koperasi desa/kelurahan diluncurkan se-Indonesia</span></div><div class="st"><big>7</big><span>unit usaha yang diarahkan pemerintah</span></div><div class="st"><big>08.00–17.00</big><span>jam layanan kantor Klepek</span></div></div>
-<h3 class="s" style="margin-bottom:10px">Mau apa hari ini?</h3>
+<h3 class="s" role="heading" aria-level="2" style="margin-bottom:10px">Mau apa hari ini?</h3>
 <div class="quick"><a href="#produk"><span aria-hidden="true">🛒</span>Cek harga</a><a href="#adil"><span aria-hidden="true">🌱</span>Tebus pupuk</a><a href="#pasar"><span aria-hidden="true">🌾</span>Jual hasil tani</a><a href="#armada"><span aria-hidden="true">🚚</span>Sewa kendaraan</a><a href="#anggota"><span aria-hidden="true">🤝</span>Jadi anggota</a><a href="#aspirasi"><span aria-hidden="true">💬</span>Usul / lapor</a></div>
 <div class="stage" id="sehari" style="margin-top:34px">
 <div class="sky day" id="sky" aria-live="polite">
@@ -275,11 +399,13 @@ body.vinfo .cartfab{display:none}
 <h3 id="tt"></h3>
 <p id="tx"></p>
 </div>
-<div class="scene" id="scene"><div class="pic bimg" role="img" aria-label="Ilustrasi gerai KDKMP"></div><div class="ov"></div><div class="lamps"></div><span class="sign">ANGKRINGAN &amp; STMJ</span></div>
-<div class="ctl">
-<label for="jam" style="margin:0 0 6px">Jam: <span id="jl">09.00</span></label>
-<input type="range" id="jam" min="7" max="24" step="1" value="9">
-<div><span>07.00 persiapan</span><span>08.00–17.00 gerai buka</span><span>24.00 angkringan tutup</span></div>
+<div class="scene" id="scene"><div class="pic bimg" role="img" aria-label="Ilustrasi gerai KDKMP"></div><div class="ov"></div><div class="lamps"></div><span class="celest" id="celest" aria-hidden="true"></span><span class="sign">ANGKRINGAN &amp; STMJ</span></div>
+<div class="ctl" id="ctl">
+<div class="ctl-top"><label for="jam" style="margin:0">Jam: <span id="jl">09.00</span></label><span class="jst" id="jst" role="status"><i></i><b></b></span></div>
+<div class="trackw" id="trackw"><span class="jbub" id="jbub" aria-hidden="true">09.00</span><input type="range" id="jam" min="7" max="24" step="0.5" value="9" aria-describedby="jleg"><div class="ticks" id="jticks" aria-hidden="true"></div></div>
+<div class="jleg" id="jleg"><span>07.00 persiapan</span><span>08.00–17.00 gerai buka</span><span>24.00 angkringan tutup</span></div>
+<div class="jbtns"><button type="button" class="btn mini alt" id="jprev" aria-label="Mundur 1 jam">&minus; 1 jam</button><button type="button" class="btn mini" id="jplay" aria-pressed="false"><b>Putar sehari</b></button><button type="button" class="btn mini alt" id="jnext" aria-label="Maju 1 jam">+ 1 jam</button><button type="button" class="btn mini alt" id="jnow" aria-label="Loncat ke jam sekarang">Sekarang</button></div>
+<ul class="acts" id="jacts"></ul>
 </div>
 </div>
 </header></div>
@@ -399,13 +525,14 @@ body.vinfo .cartfab{display:none}
 <p class="m">Acuan: HPP gabah kering panen Rp6.500/kg dan rata-rata harga petani sekitar Rp7.000/kg pada Juli 2026 (Bapanas).</p>
 </div></section>
 
-<section id="transparan"><div class="w"><svg class="sill" viewBox="0 0 140 120" aria-hidden="true"><g stroke="#111" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" fill="none"><rect x="18" y="20" width="104" height="72" rx="6" fill="#c98a4b"/><rect x="27" y="29" width="86" height="54" fill="#fff"/><rect x="33" y="35" width="26" height="22" fill="#ffe14d"/><rect x="66" y="35" width="40" height="14" fill="#8bf5c0"/><rect x="66" y="54" width="40" height="22" fill="#ffd1d8"/><path d="M37 66h18M37 74h12"/><path d="M44 92v20M96 92v20"/></g></svg>
+<section id="transparan"><div class="w">
+<div class="phead" aria-hidden="true"><img src="assets/img-658a84dd.webp" alt="" height="44"><div><b>Koperasi Desa Merah Putih Klepek</b><span>Kec. Kunjang, Kabupaten Kediri, Jawa Timur</span><em>Dicetak: <span id="pdt"></span></em></div></div><svg class="sill" viewBox="0 0 140 120" aria-hidden="true"><g stroke="#111" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" fill="none"><rect x="18" y="20" width="104" height="72" rx="6" fill="#c98a4b"/><rect x="27" y="29" width="86" height="54" fill="#fff"/><rect x="33" y="35" width="26" height="22" fill="#ffe14d"/><rect x="66" y="35" width="40" height="14" fill="#8bf5c0"/><rect x="66" y="54" width="40" height="22" fill="#ffd1d8"/><path d="M37 66h18M37 74h12"/><path d="M44 92v20M96 92v20"/></g></svg>
 <h2>Papan transparansi</h2>
 <p>Pengumuman terbuka untuk semua warga: jadwal pupuk, giliran LPG, harga, dan ringkasan keuangan. Isinya diperbarui pengurus.</p>
 <p class="m" id="upd"></p>
 <h3 class="s" id="pg-h" hidden>Pengumuman terbaru</h3><div id="pg-list"></div>
-<h3 class="s">Ikuti kabar koperasi</h3>
-<div class="box" id="kabar"><div id="kb-links" style="margin-bottom:10px"></div>
+<h3 class="s np">Ikuti kabar koperasi</h3>
+<div class="box np" id="kabar"><div id="kb-links" style="margin-bottom:10px"></div>
 <div id="kb-form" hidden><label for="kbh">Nomor WhatsApp</label><input type="tel" id="kbh" autocomplete="tel" inputmode="tel" placeholder="08xxxxxxxxxx">
 <p style="margin:10px 0 4px;font-weight:700">Kabar yang ingin saya terima</p>
 <label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" class="kbm" value="Pupuk" checked> Jadwal pupuk</label>
@@ -417,9 +544,9 @@ body.vinfo .cartfab{display:none}
 <p style="margin-top:12px"><button class="btn" id="kbs" type="button">Daftar kabar</button></p></div>
 <p style="margin:0"><button class="btn" id="kbw" type="button" style="background:var(--card);color:var(--ink)">Minta masuk daftar kabar lewat WhatsApp</button></p>
 <p class="m" id="kbm" role="status"></p></div>
-<p><button class="btn" id="pr" type="button">Cetak papan transparansi</button></p>
-<h3 class="s">Cek jadwal saya</h3>
-<div class="box" id="cj"><label for="cjt">Saya ingin cek</label><select id="cjt"><option value="pupuk">Jadwal tebus pupuk subsidi</option><option value="lpg">Giliran LPG 3 kg</option></select>
+<p class="np"><button class="btn" id="pr" type="button">Cetak papan transparansi</button></p>
+<h3 class="s np">Cek jadwal saya</h3>
+<div class="box np" id="cj"><label for="cjt">Saya ingin cek</label><select id="cjt"><option value="pupuk">Jadwal tebus pupuk subsidi</option><option value="lpg">Giliran LPG 3 kg</option></select>
 <label for="cjp" id="cjl">Kelompok tani saya</label><select id="cjp"></select>
 <div id="cjr" role="status" aria-live="polite" style="margin-top:12px"></div></div>
 <h3 class="s">Kuota dan penyaluran desa</h3><div id="t-kuota"></div>
@@ -430,7 +557,7 @@ body.vinfo .cartfab{display:none}
 <h3 class="s">Daftar harga</h3><p class="m">Semua barang yang dijual di koperasi mengikuti HET pemerintah.</p><div id="t-harga"></div>
 <h3 class="s">Ringkasan keuangan bulanan</h3><div id="keu-sum"></div><div id="t-keu"></div>
 <p class="m" style="margin-top:8px">Selisih = pemasukan dikurangi pengeluaran dalam bulan itu. Ini bukan laba bersih resmi.</p>
-<h3 class="s">Simulasi SHU saya</h3><div id="shu"></div>
+<h3 class="s np">Simulasi SHU saya</h3><div id="shu" class="np"></div>
 </div></section>
 
 <section id="agenda"><div class="w"><svg class="sill" viewBox="0 0 140 120" aria-hidden="true"><g stroke="#111" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" fill="none"><g transform="translate(44 114) scale(0.8)"><rect x="-14" y="-38" width="12" height="38" fill="#2b4c7e"/><rect x="2" y="-38" width="12" height="38" fill="#2b4c7e"/><rect x="-16" y="-4" width="16" height="6" rx="3" fill="#222"/><rect x="0" y="-4" width="16" height="6" rx="3" fill="#222"/><path d="M-20 -36V-80q0-14 14-14h12q14 0 14 14V-36z" fill="#ffffff"/><path d="M-14 -70h28v34h-28z" fill="#ffe14d"/><path d="M-20 -84L-30 -52M20 -84L30 -52" stroke="#111" stroke-width="11"/><path d="M-20 -84L-30 -52M20 -84L30 -52" stroke="#ffffff" stroke-width="5"/><circle cx="-30" cy="-50" r="5" fill="#f3c9a0"/><circle cx="30" cy="-50" r="5" fill="#f3c9a0"/><circle cx="0" cy="-110" r="15" fill="#f3c9a0"/><path d="M-15 -112a15 15 0 0 1 30 0z" fill="#222"/><circle cx="-4.5" cy="-106" r="1.8" fill="#111" stroke="none"/><circle cx="4.5" cy="-106" r="1.8" fill="#111" stroke="none"/><path d="M-4 -100q4 3.5 8 0" stroke-width="2"/><path d="M-14 -121a14 10 0 0 1 28 0z" fill="#222"/></g><rect x="78" y="70" width="52" height="30" fill="#fff"/><path d="M72 70l8-18h46l8 18z" fill="#e4002b"/><circle cx="90" cy="108" r="8" fill="#222"/><circle cx="120" cy="108" r="8" fill="#222"/><path d="M92 86h28" /></g></svg>
@@ -633,10 +760,10 @@ window.addEventListener('DOMContentLoaded',function(){if(navigator.onLine===fals
 /* ===== Sumber data papan transparansi (Google Sheet) =====
    Isi SHEET_ID dengan ID Google Sheet pengurus (bagian antara /d/ dan /edit pada alamat Sheet).
    Dikosongkan = situs memakai data bawaan di bawah. Panduan lengkap ada di file Template Data Pengurus. */
-var SHEET_ID='1elJhmDoqUT5-C1b_YIUd-ulZptg-rp4K-JrBuVS4ucc';
+var SHEET_ID='';
 /* FORM_URL = alamat aplikasi web Apps Script (berakhiran /exec) untuk menerima aspirasi dan pendaftaran anggota.
    Dikosongkan = tombol kirim memakai WhatsApp seperti sebelumnya. */
-var FORM_URL='https://script.google.com/macros/s/AKfycbw5Aki6sDU76tDEs5m4A2NlakUola3Rg5pt2wVV8qFC9yd5TZgDgcSUtDZrgDTGndE/exec';
+var FORM_URL='';
 (function(){
 var TIMEOUT=4500,CK='kdkmp_sheet_v1';
 var TABS={
@@ -755,11 +882,43 @@ var P=[
 [17,19,"eve","Gerai tutup 17.00","Sore: teras bersiap","Kantor dan gerai koperasi tutup pukul 17.00. Armada kembali dan dicek, teras disiapkan untuk angkringan."],
 [19,25,"night","Angkringan s.d. 24.00","Teras malam: angkringan dan STMJ","UMKM warga membuka angkringan dan STMJ di teras sampai pukul 24.00. Gerai koperasi sudah tutup, tetapi teras tetap hidup."]];
 var jam=document.getElementById('jam');
-function pf(){var j=+jam.value,p=P.find(function(x){return j>=x[0]&&j<x[1]})||P[3];
-document.getElementById('jl').textContent=('0'+j).slice(-2)+'.00';
-var s=document.getElementById('sky');s.className='sky '+p[2];document.getElementById('scene').className='scene '+p[2];
-document.getElementById('tg').textContent=p[3];document.getElementById('tt').textContent=p[4];document.getElementById('tx').textContent=p[5]}
-jam.addEventListener('input',pf);pf();
+var JA=[
+[7,8,[['\ud83e\uddf9','Teras disapu'],['\ud83d\ude9c','Armada dipanaskan'],['\ud83d\udce6','Stok ditata']]],
+[8,12,[['\ud83d\uded2','Gerai melayani belanja'],['\ud83c\udf31','Tebus pupuk subsidi'],['\ud83d\udd25','LPG 3 kg sesuai HET']]],
+[12,15,[['\ud83c\udf3e','Petani menjual hasil panen'],['\u2696\ufe0f','Penimbangan dan pencatatan'],['\ud83d\ude9a','Sewa armada dilayani']]],
+[15,17,[['\ud83d\udccb','Rekap penjualan hari ini'],['\ud83d\udcac','Usul warga ditampung'],['\ud83c\udfa0','Hiburan anak di teras']]],
+[17,19,[['\ud83d\udd12','Gerai tutup 17.00'],['\ud83d\ude9b','Armada kembali dan dicek'],['\ud83e\ude91','Teras disiapkan']]],
+[19,22,[['\ud83c\udf62','Angkringan UMKM buka'],['\u2615','STMJ hangat'],['\ud83d\udca1','Lampu teras menyala']]],
+[22,25,[['\ud83c\udf19','Warga ngobrol di teras'],['\ud83c\udf62','Angkringan tutup 24.00'],['\ud83e\uddf9','Teras dibereskan']]]];
+var TINT=[[7,[255,170,90,.30]],[9,[255,210,130,0]],[16,[255,210,130,0]],[17.5,[255,125,40,.26]],[19,[70,40,110,.42]],[20.5,[14,10,60,.6]],[24,[14,10,60,.68]]];
+function tint(j){var k=0;while(k<TINT.length-2&&j>TINT[k+1][0])k++;var a=TINT[k],b=TINT[k+1],t=Math.max(0,Math.min(1,(j-a[0])/(b[0]-a[0]))),c=a[1].map(function(v,n){return v+(b[1][n]-v)*t});return 'rgba('+Math.round(c[0])+','+Math.round(c[1])+','+Math.round(c[2])+','+c[3].toFixed(3)+')'}
+var jam=document.getElementById('jam'),jl=document.getElementById('jl'),jbub=document.getElementById('jbub'),jst=document.getElementById('jst'),jacts=document.getElementById('jacts'),cel=document.getElementById('celest'),scn=document.getElementById('scene'),sk=document.getElementById('sky'),lastP=-1,lastA=-1,jtm=null,jpl=document.getElementById('jplay');
+function fmt(j){var h=Math.floor(j);return ('0'+h).slice(-2)+'.'+(j%1?'30':'00')}
+(function(){var tk=document.getElementById('jticks');[7,8,12,17,19,24].forEach(function(h,n,arr){var e=document.createElement('span');e.textContent=('0'+h).slice(-2);e.style.setProperty('--p',(h-7)/17);e.className=n===0?'f':n===arr.length-1?'l':'';tk.appendChild(e)})})();
+function jstat(j){return j<8?['prep','Persiapan \u00b7 gerai buka 08.00']:j<17?['open','Gerai buka \u00b7 tutup 17.00']:j<19?['closed','Gerai tutup \u00b7 teras bersiap']:['night','Gerai tutup \u00b7 angkringan s.d. 24.00']}
+function pf(){var j=Math.max(7,Math.min(24,+jam.value)),pi=P.findIndex(function(x){return j>=x[0]&&j<x[1]});if(pi<0)pi=3;var p=P[pi],pr=(j-7)/17;
+jl.textContent=fmt(j);jbub.textContent=fmt(j);var bx=jbub.parentNode;bx.style.setProperty('--p',pr);jam.style.setProperty('--p',pr);
+var st=jstat(j);jst.className='jst '+st[0];jst.children[1].textContent=st[1];
+jam.setAttribute('aria-valuetext',fmt(j)+', '+st[1]);
+sk.className='sky '+p[2];scn.className='scene '+p[2];
+if(pi!==lastP){document.getElementById('tg').textContent=p[3];document.getElementById('tt').textContent=p[4];document.getElementById('tx').textContent=p[5];sk.classList.add('swap');setTimeout(function(){sk.classList.remove('swap')},400);lastP=pi}
+var ai=JA.findIndex(function(x){return j>=x[0]&&j<x[1]});if(ai<0)ai=JA.length-1;
+if(ai!==lastA){lastA=ai;jacts.textContent='';JA[ai][2].forEach(function(c,n){var li=document.createElement('li');li.style.animationDelay=(n*70)+'ms';var e=document.createElement('span');e.setAttribute('aria-hidden','true');e.textContent=c[0];var t=document.createElement('b');t.textContent=c[1];li.appendChild(e);li.appendChild(t);jacts.appendChild(li)})}
+var ov=scn.querySelector('.ov');ov.style.background=tint(j);
+scn.style.setProperty('--lamp',Math.max(0,Math.min(1,(j-18.2)/1.6)));
+var moon=j>=18.6,t=moon?(j-18.6)/5.4:(j-7)/11.6,x=8+t*84,y=36-30*Math.sin(Math.PI*Math.max(0,Math.min(1,t)));
+cel.className='celest'+(moon?' moon':'');cel.style.left=x+'%';cel.style.top=y+'%';
+if(!moon){var e=Math.abs(t-.5)*2;cel.style.background='rgb(255,'+Math.round(207-e*114)+','+Math.round(51-e*0)+')'}else cel.style.background=''}
+function jstop(){if(jtm){clearInterval(jtm);jtm=null}jpl.setAttribute('aria-pressed','false');jpl.firstChild.textContent='Putar sehari'}
+function jgo(v){jam.value=Math.max(7,Math.min(24,v));pf()}
+function jplay(){if(jtm){jstop();return}jpl.setAttribute('aria-pressed','true');jpl.firstChild.textContent='Jeda';if(+jam.value>=24)jgo(7);jtm=setInterval(function(){var v=+jam.value+.5;if(v>24){jstop();return}jgo(v)},420)}
+jpl.onclick=jplay;
+document.getElementById('jprev').onclick=function(){jstop();jgo(Math.ceil(+jam.value)-1-(+jam.value%1?0:0))};
+document.getElementById('jnext').onclick=function(){jstop();jgo(Math.floor(+jam.value)+1)};
+document.getElementById('jnow').onclick=function(){jstop();var w=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Jakarta'}));var h=w.getHours()+(w.getMinutes()>=30?.5:0);jgo(h<7?7:h)};
+jam.addEventListener('input',function(){jstop();pf()});
+if('IntersectionObserver' in window)new IntersectionObserver(function(e){if(!e[0].isIntersecting)jstop()},{threshold:.15}).observe(document.getElementById('sehari'));
+pf();
 
 var I=[
 ["Rantai pasok hasil tani","Koperasi membeli hasil tani langsung dari petani dan menjualnya ke pembeli tanpa lewat pasar atau tengkulak. Petani mendapat harga yang lebih baik, dan selisihnya kembali ke anggota lewat SHU.","Tahap 3. Status: segera hadir, dimulai dengan sistem pre-order."],
@@ -915,7 +1074,9 @@ if(r[5])c.appendChild(p('Jatah per penerima: '+r[5],'m'));kc.appendChild(c)})
 })();
 if(CFG.keuangan.length){var mx=Math.max.apply(null,CFG.keuangan.map(function(r){return Math.max(+r[1]||0,+r[2]||0)}))||1,kc=$('t-keu');
 CFG.keuangan.forEach(function(r){var d=document.createElement('div');d.style.marginTop='10px';d.textContent=r[0]+' (hijau: pemasukan, merah: pengeluaran)';['1','2'].forEach(function(x,i){var b=document.createElement('div');b.className='bar'+(i?' o':'');var s=document.createElement('span');s.style.width=((+r[x]||0)/mx*100)+'%';b.appendChild(s);d.appendChild(b)});kc.appendChild(d)})}
-$('pr').onclick=function(){document.body.classList.add('pr');try{window.print()}catch(e){}setTimeout(function(){document.body.classList.remove('pr')},800)};
+function pdt(){try{$('pdt').textContent=new Date().toLocaleString('id-ID',{timeZone:'Asia/Jakarta',weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}).replace(/\./g,'.')+' WIB'}catch(e){}}
+window.addEventListener('beforeprint',pdt);window.addEventListener('afterprint',function(){document.body.classList.remove('pr')});
+$('pr').onclick=function(){document.body.classList.add('pr');pdt();setTimeout(function(){try{window.print()}catch(e){document.body.classList.remove('pr')}},60)};
 var JV=[['header.hero > h1','Koperasi Desa Merah Putih Klepek: asil tani langsung menyang pasar, tanpa liwat tengkulak.'],['header.hero > p:not(.m)','Koperasi duweke warga kanggo nyediakake kabutuhan petani, ngedol asil tani kanthi rega sing apik, lan mbagi barang subsidi kanthi adil. Geser jam ing ngisor kanggo ndeleng sedina ing teras koperasi.'],['#profil h2','Kenal Desa Klepek'],['#adil h2','Pambagian barang subsidi sing adil'],['#armada h2','Nyewa armada'],['#pasar h2','Pasar asil tani'],['#agenda h2','Agenda lan UMKM teras'],['#galeri h2','Galeri'],['#anggota h2','Dadi anggota'],['#komitmen h2','Janji kita'],['#aspirasi h2','Usul saka warga']],jv=false;
 $('lang').onclick=function(e){e.preventDefault();jv=!jv;JV.forEach(function(x){var el=document.querySelector(x[0]);if(!el)return;if(!el.dataset.id)el.dataset.id=el.textContent;el.textContent=jv?x[1]:el.dataset.id});document.documentElement.lang=jv?'jv':'id';$('lang').textContent=jv?'Bahasa Indonesia':'Basa Jawa'};
 
@@ -1232,6 +1393,7 @@ function part(x){var t=JVM[x.trim()];return t===undefined?x:t}
 JVR.push([/^(.+) \u00b7 (.+)$/,function(m){var a=part(m[1]),b=part(m[2]);return(a===m[1]&&b===m[2])?null:a+' \u00b7 '+b}]);
 JVR.push([/^(.+) \((\d+)\)$/,function(m){var a=JVM[m[1]];return a?a+' ('+m[2]+')':null}]);
 Object.assign(JVM,{"Kendaraan": "Kendharaan", "Segera hadir": "Enggal wonten", "Biaya sopir": "Ragad sopir", "Biaya bahan bakar": "Ragad bahan bakar", "Ilustrasi gerai KDKMP": "Gambar gerai KDKMP", "Ilustrasi rancangan gerai KDKMP": "Gambar rancangan gerai KDKMP", "Karakter Bima Febrian Adisono membawa piala": "Tokoh Bima Febrian Adisono nggawa piala", "contoh: gabah kering panen": "tuladha: gabah garing panen", "contoh: 5 Des 2026": "tuladha: 5 Des 2026", "Huruf besar": "Tulisan ageng", "Huruf sangat besar": "Tulisan ageng sanget", "Huruf normal": "Tulisan limrah"});
+Object.assign(JVM,{"Putar sehari": "Muter sedinten", "Jeda": "Mandheg", "Sekarang": "Samenika", "− 1 jam": "− 1 jam", "Mundur 1 jam": "Mundur 1 jam", "Maju 1 jam": "Maju 1 jam", "Loncat ke jam sekarang": "Mlumpat dhateng jam samenika", "Persiapan · gerai buka 08.00": "Persiapan · gerai bukak 08.00", "Gerai buka · tutup 17.00": "Gerai bukak · tutup 17.00", "Gerai tutup · teras bersiap": "Gerai tutup · teras dipunsiyapaken", "Gerai tutup · angkringan s.d. 24.00": "Gerai tutup · angkringan ngantos 24.00", "Teras disapu": "Teras dipunresiki", "Armada dipanaskan": "Armada dipunpanasaken", "Stok ditata": "Stok dipuntata", "Gerai melayani belanja": "Gerai nglayani blanja", "LPG 3 kg sesuai HET": "LPG 3 kg miturut HET", "Petani menjual hasil panen": "Petani sade asil panen", "Penimbangan dan pencatatan": "Nimbang lan nyerat", "Sewa armada dilayani": "Nyewa armada dipunlayani", "Rekap penjualan hari ini": "Rekap dodolan dinten menika", "Usul warga ditampung": "Usul warga dipuntampi", "Hiburan anak di teras": "Hiburan lare wonten teras", "Armada kembali dan dicek": "Armada wangsul lan dipunpriksa", "Teras disiapkan": "Teras dipunsiyapaken", "Angkringan UMKM buka": "Angkringan UMKM bukak", "STMJ hangat": "STMJ anget", "Lampu teras menyala": "Lampu teras murub", "Warga ngobrol di teras": "Warga ngobrol wonten teras", "Teras dibereskan": "Teras dipunberesaken", "Dicetak": "Dicithak", "Papan transparansi": "Papan katebukan"});
 JVR.push([/^Tambah (.+) ke keranjang$/,function(m){return 'Tambah '+m[1]+' dhateng kranjang'}]);
 JVR.push([/^Ukuran huruf: (.+)$/,function(m){return 'Ukuran tulisan: '+(JVM[m[1]]||m[1])}]);
 JVR.push([/^(Rp[\d.]+) per (.+)$/,function(m){return m[1]+' saben '+m[2]}]);
